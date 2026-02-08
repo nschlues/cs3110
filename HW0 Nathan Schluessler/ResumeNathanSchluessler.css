@@ -1,0 +1,60 @@
+            body {
+                font: 1.2rem "Fira Sans", serif;
+            }
+
+            article {
+                margin: 5%;
+            }
+
+            header,
+            footer {
+                margin: 75px;
+                text-align: center;
+                font-size: 18px;
+                font: bold 1.2rem "Fira Sans", serif;
+            }
+
+            h2 {
+                font-size: 18px;
+                text-indent: 20px;
+            }
+
+            p.indent,
+            li {
+                font-size: 12px;
+                text-indent: 40px;
+                font: italic 1.2rem "Fira Sans", serif;
+            }
+
+            ul {
+                margin: 30px;
+                list-style: circle;
+            }
+                
+            img {
+                width: 300px; height: 400px; 
+                border: 2px solid black;
+                float: right;
+            }
+            
+
+            @media print {
+                .screen {
+                    visibility: hidden;
+                    display: none;
+
+                }
+            }
+
+            @media screen {
+                .print {
+                    visibility: hidden;
+                }
+
+                body {
+                    background-color:powderblue;
+                    text-indent: 0px;
+                    justify-content: center;
+                    flex-direction: column;
+                }
+            }
