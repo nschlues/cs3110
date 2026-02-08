@@ -3,6 +3,7 @@
     <head>
         <title>Calculator</title>
         <link rel="stylesheet" type="text/css" href="CalculatorNathanSchluessler.css">
+        <script src="CalculatorNathanSchluessler.js" defer></script>
     </head>
     <body>
         <header>
@@ -43,24 +44,6 @@
             <h1>You're welcome! 😁</h1>
         </footer>
     </body>
-    <script>
-        document.body.addEventListener('click', () => 
-            document.getElementById('solution'). innerText = "Typing...")
-
-        document.getElementById("equals").addEventListener('click', (e) => e.stopPropagation())
-
-        document.getElementById("equals").addEventListener('click', () =>
-            document.getElementById("solution"). innerText = "😂 Duh 😂")
-
-        document.getElementById("reset").addEventListener('click', (e) => e.stopPropagation())
-
-        document.getElementById("reset").addEventListener('click', () =>
-            document.getElementById("solution"). innerText = "Please enter a value")
-
-
-
-
-    </script>
 </html>
 
 
