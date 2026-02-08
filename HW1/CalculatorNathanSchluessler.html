@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>Calculator</title>
+        <link rel="stylesheet" type="text/css" href="CalculatorNathanSchluessler.css">
+    </head>
+    <body>
+        <header>
+            <h1>Welcome to the dysfunctional calculator 🙄</h1>
+        </header>
+        <main>
+            <table>
+                <caption id="solution">Please enter a value</caption>
+                <tbody>
+                    <tr>
+                        <td> + </td>
+                        <td> - </td>
+                        <td id="equals"> = </td>
+                        <td id="reset">CLR</td>
+                    </tr>
+                    <tr>
+                        <td> 7 </td>
+                        <td> 8 </td>
+                        <td> 9 </td>
+                        <td> * </td>
+                    </tr>
+                    <tr>
+                        <td> 4 </td>
+                        <td> 5 </td>
+                        <td> 6 </td>
+                        <td> / </td>
+                    </tr>   
+                    <tr>
+                        <td> 1 </td>
+                        <td> 2 </td>
+                        <td> 3 </td>
+                        <td> 0 </td>
+                    </tr>                  
+                </tbody>
+            </table>
+        </main>
+        <footer>
+            <h1>You're welcome! 😁</h1>
+        </footer>
+    </body>
+    <script>
+        document.body.addEventListener('click', () => 
+            document.getElementById('solution'). innerText = "Typing...")
+
+        document.getElementById("equals").addEventListener('click', (e) => e.stopPropagation())
+
+        document.getElementById("equals").addEventListener('click', () =>
+            document.getElementById("solution"). innerText = "😂 Duh 😂")
+
+        document.getElementById("reset").addEventListener('click', (e) => e.stopPropagation())
+
+        document.getElementById("reset").addEventListener('click', () =>
+            document.getElementById("solution"). innerText = "Please enter a value")
+
+
+
+
+    </script>
+</html>
+
+
