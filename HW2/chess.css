@@ -1,0 +1,8 @@
+#standard-board { 
+    background-image: url("ChessBoard.png");
+}
+
+.board {
+    background-repeat: no-repeat;
+    background-size: 100%;
+}
