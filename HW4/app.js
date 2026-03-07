@@ -110,6 +110,32 @@ const handleRequest = (req, res) => {
     }
 };
 
+// AJAX GET on page load
+document.addEventListener("DOMContentLoaded", async () => {
+  try {
+    const response = await fetch("https://freechess.crabdance.com/api");
+    if (!response.ok) throw new Error(`HTTP error: ${response.status}`);
+    
+    const json = await response.json();
+
+    // Access a the list from the JSON
+    const items = json.items;
+
+    // Create new list items in the DOM
+    const ul = document.getElementById("item-list");
+    items.forEach(item => {
+        console.log(item);
+        const li = document.createElement("li");
+        li.textContent = item;
+        ul.appendChild(li);
+    });
+
+  } catch (error) {
+    console.error("Fetch failed:", error);
+  }
+});
+
+
 const server = http.createServer(handleRequest);
 server.listen(3000, () => {
     console.log("Server is running on port 3000...");

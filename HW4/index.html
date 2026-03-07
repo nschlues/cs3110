@@ -3,12 +3,19 @@
 <head>
         <meta charset='UTF-8'>
         <title>API page</title>
+        <script src="load.js" defer></script>
 
 </head>
 
 <body>
         <h1>API endpoint tester</h1>
 
+        <h2>Current Items</h2>
+        <ul id="item-list">
+                <!-- Items will be populated here -->
+        </ul>
+        
+        
         <h2>GET tester</h2>
 
         <h3>Get all items</h3>
@@ -22,14 +29,14 @@
         </form>
 
         <h2>POST tester</h2>
-        <form action='/api' method='POST'>
+        <form action='/api' method='POST' id="post-event">
                 <label for="item">New Item Name:</label>
                 <input type="text" id="item" name="item">
                 <button type="submit">Add Item</button>
         </form>
-
+    
         <h2>PUT - Update an Item</h2>
-        <form action="/api" method="POST">
+        <form action="/api" method="POST" id="put-event">
             <input type="hidden" name="_method" value="PUT">
             <label for="put-index">Index:</label>
             <input type="number" id="put-index" name="index" min="0">
@@ -39,7 +46,7 @@
         </form>
 
         <h2>DELETE - Remove an Item</h2>
-        <form action="/api" method="POST">
+        <form action="/api" method="POST" id="delete-event">
             <input type="hidden" name="_method" value="DELETE">
             <label for="delete-index">Index:</label>
             <input type="number" id="delete-index" name="index" min="0">
