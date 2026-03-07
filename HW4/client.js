@@ -23,12 +23,12 @@ document.addEventListener("DOMContentLoaded", async () => {
   } catch (error) {
     console.error("Fetch failed:", error);
   }
-});
+
 
 
   // For event listeners 
   // --- POST ---
-document.getElementById("post-event").addEventListener('submit', async (event) => {
+  document.getElementById("post-event").addEventListener('submit', async (event) => {
     event.preventDefault();
 
     const body = Object.fromEntries(new FormData(event.target).entries()); 
@@ -36,8 +36,8 @@ document.getElementById("post-event").addEventListener('submit', async (event) =
     try {
       const response = await fetch("https://freechess.crabdance.com/api", {
         method: 'POST',
-        body: JSON.stringify(body),
-        headers: { 'Content-Type': 'application/json'},
+        body: new URLSearchParams(body),
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded'},
       });
       if (!response.ok) throw new Error(`HTTP error: ${response.status}`);
 
@@ -48,19 +48,20 @@ document.getElementById("post-event").addEventListener('submit', async (event) =
     catch (error) {
       console.error("POST failed:", error);
     }
-});
+  });
 
   // --- PUT ---
-document.getElementById("put-event").addEventListener('submit', async (event) => {
+  document.getElementById("put-event").addEventListener('submit', async (event) => {
     event.preventDefault();
 
     const body = Object.fromEntries(new FormData(event.target).entries()); 
 
     try {
-      const response = await fetch("https://freechess.crabdance.com/api?index=${body.index}", {
+      const response = await fetch(`https://freechess.crabdance.com/api?index=${body.index}`, {
         method: 'PUT',
-        body: JSON.stringify(body),
-        headers: { 'Content-Type': 'application/json'},
+        body: new URLSearchParams(body),
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: new URLSearchParams(body),
       });
       if (!response.ok) throw new Error(`HTTP error: ${response.status}`);
 
@@ -71,18 +72,21 @@ document.getElementById("put-event").addEventListener('submit', async (event) =>
     catch (error) {
       console.error("PUT failed:", error);
     }
-});
+  });
 
-// --- DELETE ---
-document.getElementById("delete-event").addEventListener('submit', async (event) => {
+  // --- DELETE ---
+  document.getElementById("delete-event").addEventListener('submit', async (event) => {
     event.preventDefault();
 
     const body = Object.fromEntries(new FormData(event.target).entries()); 
 
     try {
-      const response = await fetch("https://freechess.crabdance.com/api?index=${body.index}", {
+      const response = await fetch(`https://freechess.crabdance.com/api?index=${body.index}`, {
         method: 'DELETE',
-        headers: { 'Content-Type': 'application/json'},
+        headers: { 
+          'Content-Type': 'application/json',
+        },
+        body: new URLSearchParams(body),
       });
       if (!response.ok) throw new Error(`HTTP error: ${response.status}`);
 
@@ -93,7 +97,8 @@ document.getElementById("delete-event").addEventListener('submit', async (event)
     catch (error) {
       console.error("DELETE failed:", error);
     }
-});
+  });
 
   // renderItems() function
 
+});
