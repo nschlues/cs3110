@@ -1,30 +1,34 @@
+// Function to render items list on page
+function renderItems() {
+  try {
+  const response = await fetch("https://freechess.crabdance.com/api");
+  if (!response.ok) throw new Error(`HTTP error: ${response.status}`);
+      
+  const json = await response.json();
+
+  // Access a the list from the JSON
+  const items = json.items;
+
+  // Create new list items in the DOM
+  const ul = document.getElementById("item-list");
+  items.forEach(item => {
+      console.log(item);
+      const li = document.createElement("li");
+      li.textContent = item;
+      ul.appendChild(li);
+  });
+
+  } catch (error) {
+    console.error("Fetch failed:", error);  }
+  };
+
+
+
 // Listen for content to load
 document.addEventListener("DOMContentLoaded", async () => {
 
-  // Load items on page after render
-  try {
-    const response = await fetch("https://freechess.crabdance.com/api");
-    if (!response.ok) throw new Error(`HTTP error: ${response.status}`);
-    
-    const json = await response.json();
-
-    // Access a the list from the JSON
-    const items = json.items;
-
-    // Create new list items in the DOM
-    const ul = document.getElementById("item-list");
-    items.forEach(item => {
-        console.log(item);
-        const li = document.createElement("li");
-        li.textContent = item;
-        ul.appendChild(li);
-    });
-
-  } catch (error) {
-    console.error("Fetch failed:", error);
-  }
-
-
+  // Load items on page
+  renderItems();
 
   // For event listeners 
   // --- POST ---
@@ -43,6 +47,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
       const responseData = await response.json();
       console.log("POST response:", responseData);
+      renderItems(); 
     } 
     
     catch (error) {
@@ -67,6 +72,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
       const responseData = await response.json();
       console.log("PUT response:", responseData);
+      renderItems();
     } 
     
     catch (error) {
@@ -92,13 +98,12 @@ document.addEventListener("DOMContentLoaded", async () => {
 
       const responseData = await response.json();
       console.log("DELETE response:", responseData);
+      renderItems();
     } 
     
     catch (error) {
       console.error("DELETE failed:", error);
     }
   });
-
-  // renderItems() function
 
 });
