@@ -2,13 +2,14 @@
 <html lang='en'>
 <head>
         <meta charset='UTF-8'>
-        <title>API page</title>
+        <title>Shopping list</title>
         <script src="client.js" defer></script>
+        <link rel="stylesheet" href="style.css">
 
 </head>
 
 <body>
-        <h1>API endpoint tester</h1>
+        <h1>Shopping List</h1>
 
         <h2>Current Items</h2>
         <ul id="item-list">
@@ -16,10 +17,10 @@
         </ul>
         
         
-        <h2>GET tester</h2>
+        <h2>GET an item</h2>
 
         <h3>Get all items</h3>
-        <a href="/api">GET /api (all items)</a>
+        <a href="/api">GET all items</a>
 
         <h3>Get item by index</h3>
         <form action='/api' method="GET">
@@ -28,14 +29,14 @@
                 <button type="submit">Get Item</button>
         </form>
 
-        <h2>POST tester</h2>
+        <h2>POST an item (add to list)</h2>
         <form action='/api' method='POST' id="post-event">
                 <label for="item">New Item Name:</label>
                 <input type="text" id="item" name="item">
                 <button type="submit">Add Item</button>
         </form>
     
-        <h2>PUT - Update an Item</h2>
+        <h2>PUT an item (update an item)</h2>
         <form action="/api" method="POST" id="put-event">
             <input type="hidden" name="_method" value="PUT">
             <label for="put-index">Index:</label>
@@ -45,7 +46,7 @@
             <button type="submit">Update Item</button>
         </form>
 
-        <h2>DELETE - Remove an Item</h2>
+        <h2>DELETE an item (remove from list)</h2>
         <form action="/api" method="POST" id="delete-event">
             <input type="hidden" name="_method" value="DELETE">
             <label for="delete-index">Index:</label>

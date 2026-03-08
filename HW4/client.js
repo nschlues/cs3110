@@ -1,5 +1,5 @@
 // Function to render items list on page
-function renderItems() {
+async function renderItems() {
   try {
   const response = await fetch("https://freechess.crabdance.com/api");
   if (!response.ok) throw new Error(`HTTP error: ${response.status}`);
@@ -11,6 +11,7 @@ function renderItems() {
 
   // Create new list items in the DOM
   const ul = document.getElementById("item-list");
+  ul.replaceChildren();
   items.forEach(item => {
       console.log(item);
       const li = document.createElement("li");
