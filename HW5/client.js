@@ -23,7 +23,15 @@ async function renderItems() {
     console.error("Fetch failed:", error);  }
   };
 
-
+// Logout by overwriting cached credentials with bad ones
+async function logout() {
+  try {
+    await fetch("https://freechess.crabdance.com/logout", {
+      headers: { "Authorization": "Basic " + btoa("logout:logout") }
+    });
+  } catch (e) {}
+  window.location.href = "/";
+}
 
 // Listen for content to load
 document.addEventListener("DOMContentLoaded", async () => {
@@ -103,6 +111,28 @@ document.addEventListener("DOMContentLoaded", async () => {
     
     catch (error) {
       console.error("DELETE failed:", error);
+    }
+  });
+
+    // --- CREATE USER (admin only) ---
+  document.getElementById("create-user-event").addEventListener('submit', async (event) => {
+    event.preventDefault();
+    const body = Object.fromEntries(new FormData(event.target).entries());
+    try {
+      const response = await fetch("https://freechess.crabdance.com/admin/users", {
+        method: 'POST',
+        headers: { 
+          'Content-Type': 'application/x-www-form-urlencoded' 
+        },
+        body: new URLSearchParams(body),
+      });
+      if (!response.ok) throw new Error(`HTTP error: ${response.status}`);
+
+      console.log("User created:", await response.json());
+      alert("User created successfully!");
+      
+    } catch (error) {
+      console.error("Create user failed:", error);
     }
   });
 

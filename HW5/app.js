@@ -41,6 +41,14 @@ const handleRequest = (req, res) => {
     const queryParams = parsedUrl.searchParams;
     const pathname = parsedUrl.pathname;
 
+    // Logout path
+    if (pathname === "/logout") {
+        res.writeHead(401, { "WWW-Authenticate": "Basic", "Content-Type": "application/json" });
+        res.end(JSON.stringify({ message: "Logged out" }));
+        return;
+    }
+
+    // API Routes
     if (pathname === "/api") {
 
         // --- GET ---
@@ -155,6 +163,46 @@ const handleRequest = (req, res) => {
                 const removed = items.splice(index, 1);
                 res.writeHead(200, { "Content-Type": "application/json" });
                 res.end(JSON.stringify({ message: "Item deleted!", removed, items }));
+            });
+        }
+    }
+
+    // --- ADMIN: CREATE USER ---
+    else if (pathname === "/admin/users") {
+        if (req.method === "POST") {
+            const user = authenticate(req);
+            if (!user) {
+                res.writeHead(401, { "WWW-Authenticate": "Basic", "Content-Type": "application/json" });
+                res.end(JSON.stringify({ error: "Unauthorized" }));
+                return;
+            }
+            if (user.role !== "admin") {
+                res.writeHead(403, { "Content-Type": "application/json" });
+                res.end(JSON.stringify({ error: "Forbidden: admins only" }));
+                return;
+            }
+            let body = "";
+            req.on("data", (chunk) => { body += chunk.toString(); });
+            req.on("end", () => {
+                const params = new URLSearchParams(body);
+                const newUsername = params.get("username");
+                const newPassword = params.get("password");
+                const newRole = params.get("role");
+                if (!newUsername || !newPassword || !newRole) {
+                    res.writeHead(400, { "Content-Type": "application/json" });
+                    res.end(JSON.stringify({ error: "Missing required fields: username, password, role" }));
+                    return;
+                }
+                const users = JSON.parse(fs.readFileSync(`${__dirname}/users.json`));
+                if (users.find(u => u.username === newUsername)) {
+                    res.writeHead(409, { "Content-Type": "application/json" });
+                    res.end(JSON.stringify({ error: "Username already exists" }));
+                    return;
+                }
+                users.push({ username: newUsername, passHash: sha256(newPassword), role: newRole });
+                fs.writeFileSync(`${__dirname}/users.json`, JSON.stringify(users, null, 2));
+                res.writeHead(201, { "Content-Type": "application/json" });
+                res.end(JSON.stringify({ message: "User created!", username: newUsername, role: newRole }));
             });
         }
     }

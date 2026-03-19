@@ -15,6 +15,8 @@
         <ul id="item-list">
                 <!-- Items will be populated here -->
         </ul>
+
+        <button id="logout-button" onclick="logout()">Logout</button>
         
         
         <h2>GET an item</h2>
@@ -52,6 +54,19 @@
             <label for="delete-index">Index:</label>
             <input type="number" id="delete-index" name="index" min="0">
             <button type="submit">Delete Item</button>
+        </form>
+
+        <h2>Admin: Create New User</h2>
+        <form id="create-user-event">
+                <label>Username: <input type="text" name="username"></label>
+                <label>Password: <input type="password" name="password"></label>
+                <label>Role:
+                        <select name="role">
+                            <option value="author">Author</option>
+                            <option value="admin">Admin</option>
+                        </select>
+                </label>
+                <button type="submit">Create User</button>
         </form>
 </body>
 </html>
