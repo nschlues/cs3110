@@ -3,8 +3,14 @@ const http = require('http');
 const crypto = require('crypto');
 const fs = require('fs');
 
-// Global state - declared outside handleRequest so it persists across requests
-let items = ["apple", "banana", "cherry"];
+// List helper functions
+function readItems() {
+    return JSON.parse(fs.readFileSync(`${__dirname}/list.json`));
+}
+
+function writeItems(items) {
+    fs.writeFileSync(`${__dirname}/list.json`, JSON.stringify(items, null, 2));
+}
 
 // Authentication helper functions
 function sha256(content) {
@@ -53,6 +59,7 @@ const handleRequest = (req, res) => {
 
         // --- GET ---
         if (req.method === "GET") {
+            const items = readItems();
             const index = queryParams.get("index");
             if (index === null) {
                 res.writeHead(200, { "Content-Type": "application/json" });
@@ -81,6 +88,7 @@ const handleRequest = (req, res) => {
             let body = "";
             req.on("data", (chunk) => { body += chunk.toString(); });
             req.on("end", () => {
+                const items = readItems();
                 const params = new URLSearchParams(body);
                 const newItem = params.get("item");
 
@@ -91,6 +99,7 @@ const handleRequest = (req, res) => {
                 }
 
                 items.push(newItem);
+                writeItems(items);
                 console.log("Received POST data:", body);
                 res.writeHead(201, { "Content-Type": "application/json" });
                 res.end(JSON.stringify({ message: "Data Created!", items }));
@@ -110,6 +119,7 @@ const handleRequest = (req, res) => {
             let body = "";
             req.on("data", (chunk) => { body += chunk.toString(); }); // fixed =+
             req.on("end", () => {
+                const items = readItems();
                 const params = new URLSearchParams(body);
                 const index = params.get("index");
                 const newValue = params.get("item");
@@ -127,6 +137,8 @@ const handleRequest = (req, res) => {
                 }
 
                 items[index] = newValue;
+                writeItems(items);
+
                 res.writeHead(200, { "Content-Type": "application/json" });
                 res.end(JSON.stringify({ message: "Item updated!", items }));
             });
@@ -145,6 +157,7 @@ const handleRequest = (req, res) => {
             let body = "";
             req.on("data", (chunk) => { body += chunk.toString(); });
             req.on("end", () => {
+                const items = readItems();
                 const params = new URLSearchParams(body);
                 const index = params.get("index");
 
@@ -161,6 +174,8 @@ const handleRequest = (req, res) => {
                 }
 
                 const removed = items.splice(index, 1);
+                writeItems(items);
+
                 res.writeHead(200, { "Content-Type": "application/json" });
                 res.end(JSON.stringify({ message: "Item deleted!", removed, items }));
             });
