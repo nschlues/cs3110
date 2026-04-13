@@ -20,7 +20,7 @@ function renderItems(items) {
   items.forEach((item, index) => {
       console.log(item);
       const li = document.createElement("li");
-      const when = item.at ? new Date(item.at).toLocaleTimeString() : "?";
+      const when = item.at ? new Date(item.at).toLocaleString() : "?";
       li.innerHTML = `
         <span class="item-value">[${index}] ${item.value}</span>
         <span class="item-meta">by <strong>${item.by}</strong> at ${when}</span>

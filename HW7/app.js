@@ -111,7 +111,7 @@ const handleRequest = (req, res) => {
                     return;
                 }
 
-                items.push({ value: newItem, by: actor, at: getVersion(items) + 1 });
+                items.push({ value: newItem, by: actor, at: Date.now() });
                 writeItems(items);
                 console.log("Received POST data:", body);
                 res.writeHead(201, { "Content-Type": "application/json" });
@@ -150,7 +150,7 @@ const handleRequest = (req, res) => {
                     return;
                 }
 
-                items[index] = newValue;
+                items[index] = { value: newValue, by: actor, at: Date.now() };
                 writeItems(items);
 
                 res.writeHead(200, { "Content-Type": "application/json" });
@@ -197,7 +197,7 @@ const handleRequest = (req, res) => {
         }
     }
 
-    if (pathname === "/api/poll") {
+    else if (pathname === "/api/poll") {
         const items = readItems();
         res.writeHead(200, { "Content-Type": "application/json"});
         res.end(JSON.stringify({ version: getVersion(items), items }));
