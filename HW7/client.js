@@ -4,7 +4,7 @@ const BASE = "https://freechess.crabdance.com";
 
 
 // Function to render items list on page
-function renderItems() {
+function renderItems(items) {
   //try {
   //const response = await fetch("https://freechess.crabdance.com/api");
   //if (!response.ok) throw new Error(`HTTP error: ${response.status}`);
@@ -97,7 +97,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
       const responseData = await response.json();
       console.log("POST response:", responseData);
-      renderItems(); 
+      renderItems(responseData.items); 
     } 
     
     catch (error) {
@@ -121,7 +121,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
       const responseData = await response.json();
       console.log("PUT response:", responseData);
-      renderItems();
+      renderItems(responseData.items);
     } 
     
     catch (error) {
@@ -147,7 +147,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
       const responseData = await response.json();
       console.log("DELETE response:", responseData);
-      renderItems();
+      renderItems(responseData.items);
     } 
     
     catch (error) {
