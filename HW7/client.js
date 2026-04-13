@@ -1,16 +1,18 @@
 // Set the last version so lient will always initially upload
 let lastVersion = null;
+const BASE = "https://freechess.crabdance.com";
+
 
 // Function to render items list on page
-async function renderItems() {
-  try {
-  const response = await fetch("https://freechess.crabdance.com/api");
-  if (!response.ok) throw new Error(`HTTP error: ${response.status}`);
+function renderItems() {
+  //try {
+  //const response = await fetch("https://freechess.crabdance.com/api");
+  //if (!response.ok) throw new Error(`HTTP error: ${response.status}`);
       
-  const json = await response.json();
+  //const json = await response.json();
 
   // Access a the list from the JSON
-  const items = json.items;
+  //const items = json.items;
 
   // Create new list items in the DOM
   const ul = document.getElementById("item-list");
@@ -26,12 +28,12 @@ async function renderItems() {
       ul.appendChild(li);
   });
 
-  } catch (error) {
-    console.error("Fetch failed:", error);  
-  }
+  //} catch (error) {
+    //console.error("Fetch failed:", error);  
+  //}
 };
 
-// Start polling function
+// Start polling function every 2 seconds
 async function startPolling() {
     setInterval(async () => {
         try {
