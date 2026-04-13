@@ -1,1 +1,5 @@
-["apple", "banana", "cherry"]
+[
+    {"value": "apple", "by": "vin", "at": 1}, 
+    {"value": "banana", "by": "vin", "at": 1}, 
+    {"value": "cherry", "by": "vin", "at": 1}
+]

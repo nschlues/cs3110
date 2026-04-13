@@ -26,6 +26,16 @@ function parseBasicAuth(authHeader) {
     return { username, password };
 }
 
+// Polling helper function
+function getVersion(items) {
+    if (items.length === 0) return 0;
+    return Math.max(...items.map(i => i.at || 0));
+}
+
+function getIP(req) {
+    return (req.headers['x-forwarded-for'] || req.socket.remoteAddress || 'unknown').split(',')[0].trim();
+}
+
 function authenticate(request) {
     // Parse the credentials to try to authenticate
     const parsedCredentials = parseBasicAuth(request.headers['authorization']);
@@ -59,6 +69,8 @@ const handleRequest = (req, res) => {
 
         // --- GET ---
         if (req.method === "GET") {
+            const user = authenticate(req);
+            const actor = user ? user.username : `anon@${getIP(req)}`;
             const items = readItems();
             const index = queryParams.get("index");
             if (index === null) {
@@ -79,6 +91,7 @@ const handleRequest = (req, res) => {
         else if (req.method === "POST") {
             // Check that the user is authenticated before completing the request
             const user = authenticate(req);
+            const actor = user ? user.username : `anon@${getIP(req)}`;
             if (!user){
                 res.writeHead(401, { "WWW-Authenticate": "Basic", "Content-Type": "application/json" });
                 res.end(JSON.stringify({ error: "Unauthorized" }));
@@ -98,7 +111,7 @@ const handleRequest = (req, res) => {
                     return;
                 }
 
-                items.push(newItem);
+                items.push({ value: newItem, by: actor, at: getVersion(items) + 1 });
                 writeItems(items);
                 console.log("Received POST data:", body);
                 res.writeHead(201, { "Content-Type": "application/json" });
@@ -110,6 +123,7 @@ const handleRequest = (req, res) => {
         else if (req.method === "PUT") {
             // Check that the user is authenticated before completing the request
             const user = authenticate(req);
+            const actor = user ? user.username : `anon@${getIP(req)}`;
             if (!user){
                 res.writeHead(401, { "WWW-Authenticate": "Basic", "Content-Type": "application/json" });
                 res.end(JSON.stringify({ error: "Unauthorized" }));
@@ -148,6 +162,7 @@ const handleRequest = (req, res) => {
         else if (req.method === "DELETE") {
             // Check that the user is authenticated before completing the request
             const user = authenticate(req);
+            const actor = user ? user.username : `anon@${getIP(req)}`;
             if (!user){
                 res.writeHead(401, { "WWW-Authenticate": "Basic", "Content-Type": "application/json" });
                 res.end(JSON.stringify({ error: "Unauthorized" }));
@@ -182,10 +197,18 @@ const handleRequest = (req, res) => {
         }
     }
 
+    if (pathname === "/api/poll") {
+        const items = readItems();
+        res.writeHead(200, { "Content-Type": "application/json"});
+        res.end(JSON.stringify({ version: getVersion(items), items }));
+        return;
+    }
+
     // --- ADMIN: CREATE USER ---
     else if (pathname === "/admin/users") {
         if (req.method === "POST") {
             const user = authenticate(req);
+            
             if (!user) {
                 res.writeHead(401, { "WWW-Authenticate": "Basic", "Content-Type": "application/json" });
                 res.end(JSON.stringify({ error: "Unauthorized" }));

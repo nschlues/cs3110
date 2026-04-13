@@ -1,3 +1,6 @@
+// Set the last version so lient will always initially upload
+let lastVersion = null;
+
 // Function to render items list on page
 async function renderItems() {
   try {
@@ -15,13 +18,36 @@ async function renderItems() {
   items.forEach(item => {
       console.log(item);
       const li = document.createElement("li");
-      li.textContent = item;
+      const when = item.at ? new Date(item.at).toLocaleTimeString() : "?";
+      li.innerHTML = `
+        <span class="item-value">[${index}] ${item.value}</span>
+        <span class="item-meta">by <strong>${item.by}</strong> at ${when}</span>
+      `;
       ul.appendChild(li);
   });
 
   } catch (error) {
-    console.error("Fetch failed:", error);  }
-  };
+    console.error("Fetch failed:", error);  
+  }
+};
+
+// Start polling function
+async function startPolling() {
+    setInterval(async () => {
+        try {
+            const response = await fetch(`${BASE}/api/poll`);
+            if (!response.ok) return;
+            const { version, items } = await response.json();
+
+            if (version !== lastVersion) {
+                lastVersion = version;
+                renderItems(items);
+            }
+        } catch (error) {
+            console.error("Poll failed:", error);
+        }
+    }, 2000);
+}
 
 // Logout by overwriting cached credentials with bad ones
 async function logout() {
@@ -36,8 +62,21 @@ async function logout() {
 // Listen for content to load
 document.addEventListener("DOMContentLoaded", async () => {
 
-  // Load items on page
-  renderItems();
+  // First fetch does not wait for polling
+  try {
+    const response = await fetch(`${BASE}/api/poll`);
+      if (response.ok) {
+        const { version, items } = await response.json();
+        lastVersion = version;
+        renderItems(items);
+      }
+    } 
+    catch (e) {
+        console.error("Initial load failed:", e);
+    }
+
+  // Start polling after initial load
+  startPolling();
 
   // For event listeners 
   // --- POST ---
