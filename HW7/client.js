@@ -17,7 +17,7 @@ function renderItems() {
   // Create new list items in the DOM
   const ul = document.getElementById("item-list");
   ul.replaceChildren();
-  items.forEach(item => {
+  items.forEach((item, index) => {
       console.log(item);
       const li = document.createElement("li");
       const when = item.at ? new Date(item.at).toLocaleTimeString() : "?";
