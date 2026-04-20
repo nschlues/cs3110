@@ -1,0 +1,5 @@
+[
+    { "username": "vin", "passHash": "0980ac274e6efa2ee713fc3ed69f5e03245a5ff9604ea5fcf55fd0b0f83a868d", "role": "admin" },
+    { "username": "elend", "passHash": "1aacf24ef12350b437ff95ad700636670acd1ca05008fc540bcdfb5589572e85", "role": "user" }
+
+]
