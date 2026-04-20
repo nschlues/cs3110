@@ -2,18 +2,43 @@
 let lastVersion = null;
 const BASE = "https://freechess.crabdance.com";
 
-// Vibrate API function for unauthorized access
-function vibrateUnauthorized() {
-  if ("vibrate" in navigator) {
-    navigator.vibrate([200, 100, 200]);
+// Requests permission once on page load. If denied, the site works normally
+// without notifications — all list functionality is unaffected.
+async function requestNotificationPermission() {
+  if (!("Notification" in window)) return; // browser doesn't support it
+  if (Notification.permission === "default") {
+    await Notification.requestPermission();
   }
 }
+ 
+// Fires a notification if permission was granted.
+function notifyUpdate(message) {
+  if (!("Notification" in window)) return;
+  if (Notification.permission !== "granted") return;
+  new Notification("Shopping List", {
+    body: message,
+    icon: "/favicon.ico"
+  });
+}
 
-// Vibrate for new item
-function vibrateUpdate() {
-  if ("vibrate" in navigator) {
-    navigator.vibrate(60);
-  }
+function updateNotifStatus() {
+    const el = document.getElementById("notif-status");
+    if (!el) return;
+    if (!("Notification" in window)) {
+        el.textContent = "Notifications not supported";
+        el.className = "notif-status denied";
+        return;
+    }
+    if (Notification.permission === "granted") {
+        el.textContent = "Notifications on";
+        el.className = "notif-status granted";
+    } else if (Notification.permission === "denied") {
+        el.textContent = "Notifications blocked — enable in browser settings";
+        el.className = "notif-status denied";
+    } else {
+        el.textContent = "Notifications off";
+        el.className = "notif-status default";
+    }
 }
 
 // Copies the full shopping list as plain text to the clipboard.
@@ -93,7 +118,13 @@ async function startPolling() {
       const { version, items } = await response.json();
 
       if (version !== lastVersion) {
-        if (lastVersion !== null) vibrateUpdate();
+        if (lastVersion !== null) {
+          const latest = items[items.length - 1];
+          const msg = latest
+            ? `"${latest.value}" was added/updated by ${latest.by}`
+            : "The list was updated.";
+          notifyUpdate(msg);
+        }
         lastVersion = version;
         renderItems(items);
       }
@@ -118,6 +149,9 @@ async function logout() {
 // Listen for content to load
 document.addEventListener("DOMContentLoaded", async () => {
 
+  await requestNotificationPermission();
+  updateNotifStatus();
+
   // First fetch does not wait for polling
   try {
     const response = await fetch(`${BASE}/api/poll`);
@@ -134,17 +168,10 @@ document.addEventListener("DOMContentLoaded", async () => {
   // Start polling after initial load
   startPolling();
 
-  // ── Vibration test button (temporary — remove after confirming vibrate works) ──
-  document.getElementById("vibration-test-btn").addEventListener("click", () => {
-    const result = navigator.vibrate([200, 100, 200]);
-    console.log("vibrate() returned:", result); // false = blocked, true = accepted
-  });
-
   // For event listeners 
   // --- POST ---
   document.getElementById("post-event").addEventListener('submit', async (event) => {
     event.preventDefault();
-    vibrateUnauthorized();
 
     const body = Object.fromEntries(new FormData(event.target).entries()); 
 
@@ -154,9 +181,6 @@ document.addEventListener("DOMContentLoaded", async () => {
         body: new URLSearchParams(body),
         headers: { 'Content-Type': 'application/x-www-form-urlencoded'},
       });
-      //if (response.status === 401) {
-        //vibrateUnauthorized();
-      //}
       if (!response.ok) throw new Error(`HTTP error: ${response.status}`);
 
       const responseData = await response.json();
@@ -172,7 +196,6 @@ document.addEventListener("DOMContentLoaded", async () => {
   // --- PUT ---
   document.getElementById("put-event").addEventListener('submit', async (event) => {
     event.preventDefault();
-    vibrateUnauthorized();
 
     const body = Object.fromEntries(new FormData(event.target).entries()); 
 
@@ -182,9 +205,6 @@ document.addEventListener("DOMContentLoaded", async () => {
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
         body: new URLSearchParams(body),
       });
-      //if (response.status === 401) {
-        //vibrateUnauthorized();
-      //}
       if (!response.ok) throw new Error(`HTTP error: ${response.status}`);
 
       const responseData = await response.json();
@@ -200,7 +220,6 @@ document.addEventListener("DOMContentLoaded", async () => {
   // --- DELETE ---
   document.getElementById("delete-event").addEventListener('submit', async (event) => {
     event.preventDefault();
-    vibrateUnauthorized();
 
     const body = Object.fromEntries(new FormData(event.target).entries()); 
 
@@ -212,9 +231,6 @@ document.addEventListener("DOMContentLoaded", async () => {
         },
         body: new URLSearchParams(body),
       });
-      //if (response.status === 401) {
-        //vibrateUnauthorized();
-      //}
       if (!response.ok) throw new Error(`HTTP error: ${response.status}`);
 
       const responseData = await response.json();
@@ -230,7 +246,6 @@ document.addEventListener("DOMContentLoaded", async () => {
     // --- CREATE USER (admin only) ---
   document.getElementById("create-user-event").addEventListener('submit', async (event) => {
     event.preventDefault();
-    vibrateUnauthorized();
 
     const body = Object.fromEntries(new FormData(event.target).entries());
     try {
@@ -241,9 +256,6 @@ document.addEventListener("DOMContentLoaded", async () => {
         },
         body: new URLSearchParams(body),
       });
-      //if (response.status === 401) {
-        //vibrateUnauthorized();
-      //}
       if (!response.ok) throw new Error(`HTTP error: ${response.status}`);
 
       console.log("User created:", await response.json());

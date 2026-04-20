@@ -155,3 +155,13 @@ header {
 .paste-btn:hover { 
   background: #e8e8e8; 
 }
+
+.notif-status {
+  font-size: 12px;
+  padding: 3px 8px;
+  border-radius: 6px;
+  display: inline-block;
+}
+.notif-status.granted  { background: #e8f5e9; color: #2e7d32; }
+.notif-status.denied   { background: #fdecea; color: #b71c1c; }
+.notif-status.default  { background: #fff8e1; color: #f57f17; }
