@@ -2,35 +2,86 @@
 let lastVersion = null;
 const BASE = "https://freechess.crabdance.com";
 
+// Vibrate API function for unauthorized access
+function vibrateUnauthorized() {
+  if ("vibrate" in navigator) {
+    navigator.vibrate([200, 100, 200]);
+  }
+}
+
+// Vibrate for new item
+function vibrateUpdate() {
+  if ("vibrate" in navigator) {
+    navigator.vibrate(60);
+  }
+}
+
+// Copies the full shopping list as plain text to the clipboard.
+async function copyAllItems() {
+  const items = document.querySelectorAll("#item-list li");
+  const feedback = document.getElementById("copy-feedback");
+ 
+  const lines = [];
+  items.forEach(li => {
+    const val = li.querySelector(".item-value");
+    const meta = li.querySelector(".item-meta");
+    if (val) {
+      lines.push(val.textContent.trim() + (meta ? "  " + meta.textContent.trim() : ""));
+    } 
+    else {
+      lines.push(li.textContent.trim());
+    }
+  });
+ 
+  try {
+    await navigator.clipboard.writeText(lines.join("\n"));
+    feedback.textContent = "Copied!";
+    setTimeout(() => { feedback.textContent = ""; }, 2000);
+  } 
+  catch (err) {
+    feedback.textContent = "Copy failed — permission denied";
+    setTimeout(() => { feedback.textContent = ""; }, 3000);
+    console.error("Clipboard write failed:", err);
+  }
+}
+ 
+// Pastes clipboard text into the targeted input field.
+async function pasteIntoField(inputId) {
+  try {
+    const text = await navigator.clipboard.readText();
+    const input = document.getElementById(inputId);
+    if (input) {
+      input.value = text;
+      input.focus();
+    }
+  } 
+  catch (err) {
+    alert("Paste failed — clipboard permission may be denied.");
+    console.error("Clipboard read failed:", err);
+  }
+}
+
+document.getElementById("copy-all-btn").addEventListener("click", copyAllItems);
+
+document.querySelectorAll(".paste-btn").forEach(btn => {
+    btn.addEventListener("click", () => pasteIntoField(btn.dataset.target));
+});
 
 // Function to render items list on page
 function renderItems(items) {
-  //try {
-  //const response = await fetch("https://freechess.crabdance.com/api");
-  //if (!response.ok) throw new Error(`HTTP error: ${response.status}`);
-      
-  //const json = await response.json();
-
-  // Access a the list from the JSON
-  //const items = json.items;
-
   // Create new list items in the DOM
   const ul = document.getElementById("item-list");
   ul.replaceChildren();
   items.forEach((item, index) => {
-      console.log(item);
-      const li = document.createElement("li");
-      const when = item.at ? new Date(item.at).toLocaleString() : "?";
-      li.innerHTML = `
-        <span class="item-value">[${index}] ${item.value}</span>
-        <span class="item-meta">by <strong>${item.by}</strong> at ${when}</span>
-      `;
-      ul.appendChild(li);
+    console.log(item);
+    const li = document.createElement("li");
+    const when = item.at ? new Date(item.at).toLocaleString() : "?";
+    li.innerHTML = `
+      <span class="item-value">[${index}] ${item.value}</span>
+      <span class="item-meta">by <strong>${item.by}</strong> at ${when}</span>
+    `;
+    ul.appendChild(li);
   });
-
-  //} catch (error) {
-    //console.error("Fetch failed:", error);  
-  //}
 };
 
 // Start polling function every 2 seconds
@@ -62,12 +113,6 @@ async function logout() {
   window.location.href = "/";
 }
 
-// Vibrate API function for unauthorized access
-function vibrateUnauthorized() {
-  if ("vibrate" in navigator) {
-    navigator.vibrate([200, 100, 200]);
-  }
-}
 
 
 // Listen for content to load
@@ -88,6 +133,12 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   // Start polling after initial load
   startPolling();
+
+  // ── Vibration test button (temporary — remove after confirming vibrate works) ──
+  document.getElementById("vibration-test-btn").addEventListener("click", () => {
+    const result = navigator.vibrate([200, 100, 200]);
+    console.log("vibrate() returned:", result); // false = blocked, true = accepted
+  });
 
   // For event listeners 
   // --- POST ---
