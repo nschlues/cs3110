@@ -5,7 +5,6 @@
         <title>Shopping list</title>
         <script src="client.js" defer></script>
         <link rel="stylesheet" href="style.css">
-
 </head>
 
 <body>
@@ -13,7 +12,6 @@
                 <div class="left">
                         <h1 class="label">Shopping List</h1>
                 </div>
-
                 <button id="logout-button" onclick="logout()">Logout</button>
         </header>
         
@@ -21,11 +19,14 @@
         <section class="card">
                 <div class="header">
                         <h2 class="label">Current Items</h2>
+                        <button id="copy-all-btn" class="icon-btn" title="Copy all items to clipboard">
+                                &#128203; Copy All
+                        </button>
+                        <span id="copy-feedback" class="copy-feedback" aria-live="polite"></span>
                 </div>
-                        <ul id="item-list">
-                                <li class="empty">No items in the list</li>
-                        </ul>   
-
+                <ul id="item-list">
+                        <li class="empty">No items in the list</li>
+                </ul>   
         </section>
         
         
@@ -41,11 +42,11 @@
                 <div class="header">
                         <h2 class="label">GET an item by index</h2>
                 </div>
-                        <form action='/api' method="GET">
-                                <label for="item">Index:</label>
-                                <input type="number" id="index" name="index" min="0">
-                                <button type="submit">Get Item</button>
-                        </form>
+                <form action='/api' method="GET">
+                        <label for="item">Index:</label>
+                        <input type="number" id="index" name="index" min="0">
+                        <button type="submit">Get Item</button>
+                </form>
         </section>
 
 
@@ -53,25 +54,31 @@
                 <div class="header">
                         <h2 class="label">POST an item (add to list)</h2>
                 </div>
-                        <form action='/api' method='POST' id="post-event">
-                                <label for="item">New Item Name:</label>
+                <form action='/api' method='POST' id="post-event">
+                        <label for="item">New Item Name:</label>
+                        <div class="input-row">
                                 <input type="text" id="item" name="item">
-                                <button type="submit">Add Item</button>
-                        </form>
+                                <button type="button" class="paste-btn" data-target="item" title="Paste from clipboard">&#128203; Paste</button>
+                        </div>
+                        <button type="submit">Add Item</button>
+                </form>
         </section>
 
         <section class="card">
                 <div class="header">
                         <h2 class="label">PUT an item (update an item)</h2>
                 </div>
-                        <form action="/api" method="POST" id="put-event">
-                                <input type="hidden" name="_method" value="PUT">
-                                <label for="put-index">Index:</label>
-                                <input type="number" id="put-index" name="index" min="0">
-                                <label for="put-item">New Value:</label>
+                <form action="/api" method="POST" id="put-event">
+                        <input type="hidden" name="_method" value="PUT">
+                        <label for="put-index">Index:</label>
+                        <input type="number" id="put-index" name="index" min="0">
+                        <label for="put-item">New Value:</label>
+                        <div class="input-row">
                                 <input type="text" id="put-item" name="item">
-                                <button type="submit">Update Item</button>
-                        </form>
+                                <button type="button" class="paste-btn" data-target="put-item" title="Paste from clipboard">&#128203; Paste</button>
+                        </div>
+                        <button type="submit">Update Item</button>
+                </form>
         </section>
 
 
@@ -79,12 +86,12 @@
                 <div class="header">
                         <h2 class="label">DELETE an item (remove from list)</h2>
                 </div>
-                        <form action="/api" method="POST" id="delete-event">
-                                <input type="hidden" name="_method" value="DELETE">
-                                <label for="delete-index">Index:</label>
-                                <input type="number" id="delete-index" name="index" min="0">
-                                <button type="submit">Delete Item</button>
-                        </form>
+                <form action="/api" method="POST" id="delete-event">
+                        <input type="hidden" name="_method" value="DELETE">
+                        <label for="delete-index">Index:</label>
+                        <input type="number" id="delete-index" name="index" min="0">
+                        <button type="submit">Delete Item</button>
+                </form>
         </section>
 
 
@@ -103,7 +110,6 @@
                         </label>
                         <button type="submit">Create User</button>
                 </form>
-
         </section>
 </body>
 </html>
