@@ -61,6 +61,14 @@ async function logout() {
   window.location.href = "/";
 }
 
+// Vibrate API function for unauthorized access
+function vibrateUnauthorized() {
+  if ("vibrate" in navigator) {
+    navigator.vibrate([200, 100, 200]);
+  }
+}
+
+
 // Listen for content to load
 document.addEventListener("DOMContentLoaded", async () => {
 
@@ -93,6 +101,9 @@ document.addEventListener("DOMContentLoaded", async () => {
         body: new URLSearchParams(body),
         headers: { 'Content-Type': 'application/x-www-form-urlencoded'},
       });
+      if (response.status === 401) {
+        vibrateUnauthorized();
+      }
       if (!response.ok) throw new Error(`HTTP error: ${response.status}`);
 
       const responseData = await response.json();
@@ -117,6 +128,9 @@ document.addEventListener("DOMContentLoaded", async () => {
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
         body: new URLSearchParams(body),
       });
+      if (response.status === 401) {
+        vibrateUnauthorized();
+      }
       if (!response.ok) throw new Error(`HTTP error: ${response.status}`);
 
       const responseData = await response.json();
@@ -143,6 +157,9 @@ document.addEventListener("DOMContentLoaded", async () => {
         },
         body: new URLSearchParams(body),
       });
+      if (response.status === 401) {
+        vibrateUnauthorized();
+      }
       if (!response.ok) throw new Error(`HTTP error: ${response.status}`);
 
       const responseData = await response.json();
@@ -167,6 +184,9 @@ document.addEventListener("DOMContentLoaded", async () => {
         },
         body: new URLSearchParams(body),
       });
+      if (response.status === 401) {
+        vibrateUnauthorized();
+      }
       if (!response.ok) throw new Error(`HTTP error: ${response.status}`);
 
       console.log("User created:", await response.json());
