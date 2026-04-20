@@ -35,20 +35,21 @@ function renderItems(items) {
 
 // Start polling function every 2 seconds
 async function startPolling() {
-    setInterval(async () => {
-        try {
-            const response = await fetch(`${BASE}/api/poll`);
-            if (!response.ok) return;
-            const { version, items } = await response.json();
+  setInterval(async () => {
+    try {
+      const response = await fetch(`${BASE}/api/poll`);
+      if (!response.ok) return;
+      const { version, items } = await response.json();
 
-            if (version !== lastVersion) {
-                lastVersion = version;
-                renderItems(items);
-            }
-        } catch (error) {
-            console.error("Poll failed:", error);
-        }
-    }, 2000);
+      if (version !== lastVersion) {
+        if (lastVersion !== null) vibrateUpdate();
+        lastVersion = version;
+        renderItems(items);
+      }
+    } catch (error) {
+      console.error("Poll failed:", error);
+    }
+  }, 2000);
 }
 
 // Logout by overwriting cached credentials with bad ones
@@ -92,6 +93,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   // --- POST ---
   document.getElementById("post-event").addEventListener('submit', async (event) => {
     event.preventDefault();
+    vibrateUnauthorized();
 
     const body = Object.fromEntries(new FormData(event.target).entries()); 
 
@@ -101,9 +103,9 @@ document.addEventListener("DOMContentLoaded", async () => {
         body: new URLSearchParams(body),
         headers: { 'Content-Type': 'application/x-www-form-urlencoded'},
       });
-      if (response.status === 401) {
-        vibrateUnauthorized();
-      }
+      //if (response.status === 401) {
+        //vibrateUnauthorized();
+      //}
       if (!response.ok) throw new Error(`HTTP error: ${response.status}`);
 
       const responseData = await response.json();
@@ -119,6 +121,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   // --- PUT ---
   document.getElementById("put-event").addEventListener('submit', async (event) => {
     event.preventDefault();
+    vibrateUnauthorized();
 
     const body = Object.fromEntries(new FormData(event.target).entries()); 
 
@@ -128,9 +131,9 @@ document.addEventListener("DOMContentLoaded", async () => {
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
         body: new URLSearchParams(body),
       });
-      if (response.status === 401) {
-        vibrateUnauthorized();
-      }
+      //if (response.status === 401) {
+        //vibrateUnauthorized();
+      //}
       if (!response.ok) throw new Error(`HTTP error: ${response.status}`);
 
       const responseData = await response.json();
@@ -146,6 +149,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   // --- DELETE ---
   document.getElementById("delete-event").addEventListener('submit', async (event) => {
     event.preventDefault();
+    vibrateUnauthorized();
 
     const body = Object.fromEntries(new FormData(event.target).entries()); 
 
@@ -157,9 +161,9 @@ document.addEventListener("DOMContentLoaded", async () => {
         },
         body: new URLSearchParams(body),
       });
-      if (response.status === 401) {
-        vibrateUnauthorized();
-      }
+      //if (response.status === 401) {
+        //vibrateUnauthorized();
+      //}
       if (!response.ok) throw new Error(`HTTP error: ${response.status}`);
 
       const responseData = await response.json();
@@ -175,6 +179,8 @@ document.addEventListener("DOMContentLoaded", async () => {
     // --- CREATE USER (admin only) ---
   document.getElementById("create-user-event").addEventListener('submit', async (event) => {
     event.preventDefault();
+    vibrateUnauthorized();
+
     const body = Object.fromEntries(new FormData(event.target).entries());
     try {
       const response = await fetch("https://freechess.crabdance.com/admin/users", {
@@ -184,9 +190,9 @@ document.addEventListener("DOMContentLoaded", async () => {
         },
         body: new URLSearchParams(body),
       });
-      if (response.status === 401) {
-        vibrateUnauthorized();
-      }
+      //if (response.status === 401) {
+        //vibrateUnauthorized();
+      //}
       if (!response.ok) throw new Error(`HTTP error: ${response.status}`);
 
       console.log("User created:", await response.json());
