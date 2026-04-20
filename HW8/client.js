@@ -2,45 +2,36 @@
 let lastVersion = null;
 const BASE = "https://freechess.crabdance.com";
 
-// Requests permission once on page load. If denied, the site works normally
-// without notifications — all list functionality is unaffected.
-async function requestNotificationPermission() {
-  if (!("Notification" in window)) return; // browser doesn't support it
-  if (Notification.permission === "default") {
-    await Notification.requestPermission();
-  }
-}
+// Webshare API function
+// Builds a plain-text version of the list and hands it to the OS share sheet.
+// Gracefully degrades: button is hidden entirely if the browser doesn't support it.
+async function shareList() {
+    const items = document.querySelectorAll("#item-list li");
+    const lines = [];
+    items.forEach(li => {
+        const val = li.querySelector(".item-value");
+        const meta = li.querySelector(".item-meta");
+        if (val) {
+            lines.push(val.textContent.trim() + (meta ? "  " + meta.textContent.trim() : ""));
+        } else {
+            lines.push(li.textContent.trim());
+        }
+    });
  
-// Fires a notification if permission was granted.
-function notifyUpdate(message) {
-  if (!("Notification" in window)) return;
-  if (Notification.permission !== "granted") return;
-  new Notification("Shopping List", {
-    body: message,
-    icon: "/favicon.ico"
-  });
-}
-
-function updateNotifStatus() {
-    const el = document.getElementById("notif-status");
-    if (!el) return;
-    if (!("Notification" in window)) {
-        el.textContent = "Notifications not supported";
-        el.className = "notif-status denied";
-        return;
-    }
-    if (Notification.permission === "granted") {
-        el.textContent = "Notifications on";
-        el.className = "notif-status granted";
-    } else if (Notification.permission === "denied") {
-        el.textContent = "Notifications blocked — enable in browser settings";
-        el.className = "notif-status denied";
-    } else {
-        el.textContent = "Notifications off";
-        el.className = "notif-status default";
+    try {
+        await navigator.share({
+            title: "Shopping List",
+            text: lines.join("\n"),
+        });
+    } catch (err) {
+        // AbortError just means the user cancelled the share sheet — not a real error
+        if (err.name !== "AbortError") {
+            console.error("Share failed:", err);
+        }
     }
 }
 
+// Clipboard API functions
 // Copies the full shopping list as plain text to the clipboard.
 async function copyAllItems() {
   const items = document.querySelectorAll("#item-list li");
@@ -118,13 +109,6 @@ async function startPolling() {
       const { version, items } = await response.json();
 
       if (version !== lastVersion) {
-        if (lastVersion !== null) {
-          const latest = items[items.length - 1];
-          const msg = latest
-            ? `"${latest.value}" was added/updated by ${latest.by}`
-            : "The list was updated.";
-          notifyUpdate(msg);
-        }
         lastVersion = version;
         renderItems(items);
       }
@@ -149,9 +133,14 @@ async function logout() {
 // Listen for content to load
 document.addEventListener("DOMContentLoaded", async () => {
 
-  await requestNotificationPermission();
-  updateNotifStatus();
-
+  // Share button wireup
+  const shareBtn = document.getElementById("share-btn");
+  if (navigator.share) {
+    shareBtn.style.display = "inline-block";
+    shareBtn.addEventListener("click", shareList);
+  } else {
+    shareBtn.style.display = "none";
+  }
   // First fetch does not wait for polling
   try {
     const response = await fetch(`${BASE}/api/poll`);
